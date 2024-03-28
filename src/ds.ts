@@ -32,6 +32,12 @@ export async function start() {
     })
 
     client.on('interactionCreate', async (interaction) => {
+
+      // TODO: Sync user
+      const user = interaction.user
+
+      logger.debug('interaction', interaction)
+
       if (!interaction.isChatInputCommand()) {
         return
       }

@@ -2,7 +2,7 @@ import { BotCommand } from '../@types'
 import { SocialPlatformEnum } from '../db/types'
 
 export const VK_COMMAND_PREFIX = '[club188527136|@chushpan_bot] '
-export const TG_COMMAND_PREFIX = '@dnb64_bot '
+export const TG_COMMAND_PREFIX = '@chushpan1_bot '
 
 export const BOT_COMMANDS: { [key: string]: BotCommand } = {
   chushpan: {
@@ -54,5 +54,7 @@ export const CHUSHPAN_QUOTES = [
   'На обиженных воду возят.',
   'Без тебя душа болела, ты пришла — и все прошло.',
   'Что за человек! Ни говна, ни ложки.',
-  'Пацаны не извиняются.'
+  'Пацаны не извиняются.',
+  'я на вас ща смотрю, вы не готовы',
+  'если пенис не большой, значит отъеби с душой'
 ]
