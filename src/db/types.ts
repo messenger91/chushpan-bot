@@ -21,12 +21,18 @@ export enum UserStatusEnum {
   BLOCKED,
 }
 
+export enum SocialPlatformEnum {
+  VK = 'VK', // Vk
+  TG = 'TG', // Telegram
+  DS = 'DS', // Discord
+}
+
 export interface UserTable {
   id: Generated<number>
   is_bot: boolean
   status: UserStatusEnum
   social_id: string
-  social_name: string
+  social_platform: SocialPlatformEnum
   first_name: string
   last_name?: string
   username?: string
@@ -43,7 +49,7 @@ export type UpdateUser = Updateable<UserTable>
 export interface ConversationTable {
   id: Generated<number>
   social_id: string
-  social_name: string
+  social_platform: string
   createdAt: ColumnType<Date, string | undefined, never>
   updatedAt: ColumnType<Date, string | undefined, never>
 }

@@ -2,3 +2,4 @@ node_modules
 sqlite.db
 dist
 .env
+src/db/seed.sql

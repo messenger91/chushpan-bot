@@ -1,72 +1,64 @@
 import { VK } from 'vk-io'
-import env from './config/env'
-import { getRandomArrayItem, sleep } from './helpers'
 import { UsersUserFull } from 'vk-io/lib/api/schemas/objects'
-import { createUser, findUserById, findUserBySocialId, findUsersByIdx } from './repository/UserRepository'
-import { createConversation, findConversationBySocialId } from './repository/ConversationRepository'
-import { UserStatusEnum } from './db/types'
-import {
-  createUserConversation,
-  findConversationUsers,
-  findUserConversation,
-} from './repository/UserConversationRepository'
-import { createUserConversationEvent, userConversationStat } from './repository/UserConversationEventRepository'
+import schedule from 'node-schedule'
+import { randomInt } from 'crypto'
+import { getRandomArrayItem, sleep } from './helpers'
+import { Conversation, SocialPlatformEnum, User, UserStatusEnum } from './db/types'
+import UserRepository from './repository/UserRepository'
+import ConversationRepository from './repository/ConversationRepository'
+import UserConversationRepository from './repository/UserConversationRepository'
+import UserConversationEventRepository from './repository/UserConversationEventRepository'
 import logger from './utils/logger'
+import env from './config/env'
+import { BOT_COMMANDS, VK_COMMAND_PREFIX } from './config/constants'
 
 const vk = new VK({
   token: env.VK_API_TOKEN!,
 })
 
-const prefix = '[club188527136|@chushpan_bot] '
-
-const commands = {
-  start: {
-    name: 'старт',
-    visible: true,
-    index: 0,
-  },
-  register: {
-    name: 'участвовать',
-    visible: true,
-    index: 1,
-  },
-  commandList: {
-    name: 'команды',
-    visible: false,
-    index: 2,
-  },
-  version: {
-    name: 'version',
-    visible: false,
-    index: 3,
-  },
-  stats: {
-    name: 'топ',
-    visible: true,
-    index: 4,
-  },
+const state = {
+  conversations: new Map<number, Conversation>(),
+  users: new Map<number, User>(),
 }
 
 async function start() {
   vk.updates.on('message_new', async (context) => {
+    logger.debug('state', state)
     if (!context.text) {
       return
     }
 
-    const isCommand = context.text.startsWith(prefix)
+    let user = state.users.get(context.senderId)
+    let conversation = state.conversations.get(context.peerId)
 
-    if (context.text && isCommand) {
-      const usersData = await vk.api.users.get({
+    if (!user) {
+      const [apiUser] = await vk.api.users.get({
         user_ids: [context.senderId],
         fields: ['language', 'nickname', 'about'],
       })
+      user = await syncUser(apiUser)
+      state.users.set(context.senderId, user)
+    }
 
-      const user = await syncUser(usersData[0])
-      const conversation = await syncConversation(context.peerId, 'vk')
+    if (!conversation) {
+      conversation = await syncConversation(context.peerId, 'vk')
+      state.conversations.set(context.peerId, conversation)
+    }
 
-      const command = context.text.slice(prefix.length)
-      if (command === commands.start.name) {
-        const conversationUsers = await findConversationUsers(conversation.id)
+    const isCommand = context.text.startsWith(VK_COMMAND_PREFIX)
+
+    if (context.text && isCommand) {
+      const command = context.text.slice(VK_COMMAND_PREFIX.length)
+
+      const commands = Object.values(BOT_COMMANDS).map((c) => c.name)
+
+      if (!commands.includes(command)) {
+        await context.send(
+          `Передана неизвестная команда, чтобы уточнить список доступных команд запроси команду @chushpan_bot команды`
+        )
+      }
+      if (command === BOT_COMMANDS.chushpan.name) {
+        const conversationUsers = await UserConversationRepository.findConversationUsers(conversation.id)
 
         if (!conversationUsers.length) {
           await context.send(
@@ -76,9 +68,13 @@ async function start() {
         }
         const userId = getRandomArrayItem(conversationUsers.map((uc) => uc.user_id))
 
-        await createUserConversationEvent({ user_id: userId, conversation_id: conversation.id, event: 'pidor' })
+        await UserConversationEventRepository.create({
+          user_id: userId,
+          conversation_id: conversation.id,
+          event: 'chushpan',
+        })
 
-        const user = await findUserById(userId)
+        const user = await UserRepository.findById(userId)
 
         await context.send('Инициирую поиск чушпана...')
         await sleep(1500)
@@ -87,20 +83,20 @@ async function start() {
         await context.send(`Кажется, чушпан дня - [id${user.social_id}|${user.first_name} ${user.last_name}]`)
       }
 
-      if (command === commands.register.name) {
-        const exist = await findUserConversation(user.id, conversation.id)
+      if (command === BOT_COMMANDS.register.name) {
+        const exist = await UserConversationRepository.findUserConversation(user.id, conversation.id)
 
         if (exist) {
           await context.send('Участник уже зарегестрирован в базу чушпанов')
           return
         }
 
-        await createUserConversation({ user_id: user.id, conversation_id: conversation.id })
+        await UserConversationRepository.create({ user_id: user.id, conversation_id: conversation.id })
         await context.send('Участник успешно зарегестрирован в базу чушпанов')
       }
 
-      if (command === commands.commandList.name) {
-        const commandsArray = Object.values(commands)
+      if (command === BOT_COMMANDS.commandList.name) {
+        const commandsArray = Object.values(BOT_COMMANDS)
           .filter((cmd) => cmd.visible)
           .map((cmd) => cmd.name)
 
@@ -112,14 +108,20 @@ async function start() {
         `)
       }
 
-      if (command === commands.version.name) {
+      if (command === BOT_COMMANDS.version.name) {
         await context.send('Версия бота - 1.0.0')
       }
 
-      if (command === commands.stats.name) {
-        const rows = await userConversationStat(conversation.id, 'pidor')
+      if (command === BOT_COMMANDS.stats.name) {
+        const rows = await UserConversationEventRepository.stat(conversation.id, 'chushpan')
+
+        if (rows.length === 0) {
+          await context.send('statText')
+          return
+        }
+
         const userIdx = rows.map((r) => r.user_id)
-        const users = await findUsersByIdx(userIdx)
+        const users = await UserRepository.findByIdx(userIdx)
 
         let statText = `Топ ${userIdx.length} чушпанов:\n`
 
@@ -140,23 +142,23 @@ async function start() {
   logger.info(`🚀 VK Bot started`)
 
   await vk.updates.start()
+  scheduler()
 }
 
 start()
 
 async function syncUser(params: UsersUserFull) {
   const socialId = params.id.toString()
-  const socialName = 'vk'
 
-  const exist = await findUserBySocialId(socialId, socialName)
+  const exist = await UserRepository.findBySocialId(socialId, SocialPlatformEnum.VK)
 
   if (exist) {
     return exist
   }
 
-  return await createUser({
+  return await UserRepository.create({
     social_id: socialId,
-    social_name: socialName,
+    social_platform: SocialPlatformEnum.VK,
     first_name: params.first_name,
     last_name: params.last_name,
     is_bot: false,
@@ -164,15 +166,55 @@ async function syncUser(params: UsersUserFull) {
   })
 }
 
-async function syncConversation(peerId: number, socialName: string) {
-  const exist = await findConversationBySocialId(peerId.toString(), socialName)
+async function syncConversation(peerId: number, socialPlatform: string) {
+  const exist = await ConversationRepository.findBySocialId(peerId.toString(), socialPlatform)
 
   if (exist) {
     return exist
   }
 
-  return await createConversation({
+  return await ConversationRepository.create({
     social_id: peerId.toString(),
-    social_name: socialName,
+    social_platform: socialPlatform,
+  })
+}
+
+async function scheduler() {
+  logger.info('Init scheduler')
+  const job = schedule.scheduleJob('0 0 * * *', async () => {
+    logger.info('job started')
+
+    const conversation_idx = [1, 2]
+
+    for (const conversation_id of conversation_idx) {
+      const conversation = await ConversationRepository.findById(conversation_id)
+      const row = await UserConversationRepository.getRandomUser(conversation_id)
+      if (!row) {
+        continue
+      }
+
+      const user = await UserRepository.findById(row.user_id)
+
+      await vk.api.messages.send({
+        peer_id: +conversation.social_id,
+        message: 'Инициирую поиск чушпана...',
+        random_id: randomInt(1e10),
+      })
+
+      await sleep(1500)
+
+      await vk.api.messages.send({
+        peer_id: +conversation.social_id,
+        message: 'Проверяю данные...',
+        random_id: randomInt(1e10),
+      })
+      await sleep(1500)
+
+      await vk.api.messages.send({
+        peer_id: +conversation.social_id,
+        message: `Кажется, чушпан дня - [id${user.social_id}|${user.first_name} ${user.last_name}]`,
+        random_id: randomInt(1e10),
+      })
+    }
   })
 }

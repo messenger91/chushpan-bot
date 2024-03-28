@@ -1,23 +1,32 @@
 import db from '../db'
 import { NewUser, User } from '../db/types'
 
-export async function findUserBySocialId(socialId: User['social_id'], socialName: User['social_name']) {
+const TABLE = 'users'
+
+export async function findById(id: number) {
+  return await db.selectFrom(TABLE).where('id', '=', id).selectAll().executeTakeFirstOrThrow()
+}
+
+export async function findByIdx(idx: number[]) {
+  return await db.selectFrom(TABLE).where('id', 'in', idx).selectAll().execute()
+}
+
+export async function findBySocialId(socialId: User['social_id'], socialPlatform: User['social_platform']) {
   return await db
-    .selectFrom('users')
+    .selectFrom(TABLE)
     .where('social_id', '=', socialId)
-    .where('social_name', '=', socialName)
+    .where('social_platform', '=', socialPlatform)
     .selectAll()
     .executeTakeFirst()
 }
 
-export async function findUserById(id: number) {
-  return await db.selectFrom('users').where('id', '=', id).selectAll().executeTakeFirstOrThrow()
+export async function create(user: NewUser) {
+  return await db.insertInto(TABLE).values(user).returningAll().executeTakeFirstOrThrow()
 }
 
-export async function findUsersByIdx(idx: number[]) {
-  return await db.selectFrom('users').where('id', 'in', idx).selectAll().execute()
-}
-
-export async function createUser(user: NewUser) {
-  return await db.insertInto('users').values(user).returningAll().executeTakeFirstOrThrow()
+export default {
+  findById,
+  findByIdx,
+  findBySocialId,
+  create,
 }

@@ -1,18 +1,23 @@
 import db from '../db'
 import { Conversation, NewConversation } from '../db/types'
 
-export async function findConversationBySocialId(
-  socialId: Conversation['social_id'],
-  socialName: Conversation['social_name']
-) {
+const TABLE = 'conversations'
+
+async function findById(id: Conversation['id']) {
+  return await db.selectFrom(TABLE).where('id', '=', id).selectAll().executeTakeFirstOrThrow()
+}
+
+async function findBySocialId(socialId: Conversation['social_id'], socialPlatform: Conversation['social_platform']) {
   return await db
-    .selectFrom('conversations')
+    .selectFrom(TABLE)
     .where('social_id', '=', socialId)
-    .where('social_name', '=', socialName)
+    .where('social_platform', '=', socialPlatform)
     .selectAll()
     .executeTakeFirst()
 }
 
-export async function createConversation(conversation: NewConversation) {
-  return await db.insertInto('conversations').values(conversation).returningAll().executeTakeFirstOrThrow()
+async function create(conversation: NewConversation) {
+  return await db.insertInto(TABLE).values(conversation).returningAll().executeTakeFirstOrThrow()
 }
+
+export default { findById, findBySocialId, create }
