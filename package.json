@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "build": "rimraf dist && tsc",
+    "dev": "nodemon --delay 500ms -L src/index.ts",
     "dev:vk": "nodemon --delay 500ms -L src/vk.ts",
     "dev:tg": "nodemon --delay 500ms -L src/tg.ts",
     "dev:ds": "nodemon --delay 500ms -L src/ds.ts",

@@ -1,40 +1,54 @@
 import { REST, Routes, Client, GatewayIntentBits } from 'discord.js'
 import env from './config/env'
+import logger from './utils/logger'
+import { getRandomArrayItem } from './helpers'
+import { CHUSHPAN_QUOTES } from './config/constants'
 
 const commands = [
   {
     name: 'ping',
-    description: 'Replies with Pong!',
+    description: 'Проверка бота',
+  },
+  {
+    name: 'quote',
+    description: 'Цитата дня',
   },
 ]
 
 const rest = new REST({ version: '10' }).setToken(env.DISCORD_APP_TOKEN!)
+
 const client = new Client({ intents: [GatewayIntentBits.Guilds] })
 
-async function start() {
+export async function start() {
   try {
-    console.log('Started refreshing application (/) commands.')
+    logger.info('Started refreshing application (/) commands.')
 
     await rest.put(Routes.applicationCommands(env.DISCORD_APP_ID!), { body: commands })
 
-    console.log('Successfully reloaded application (/) commands.')
+    logger.info('Successfully reloaded application (/) commands.')
 
     client.on('ready', () => {
-      console.log(`Logged in as ${client?.user?.tag}!`)
+      logger.info(`Logged in as ${client?.user?.tag}!`)
     })
 
     client.on('interactionCreate', async (interaction) => {
-      if (!interaction.isChatInputCommand()) return
+      if (!interaction.isChatInputCommand()) {
+        return
+      }
 
       if (interaction.commandName === 'ping') {
         await interaction.reply('Pong!')
       }
+
+      if (interaction.commandName === 'quote') {
+        await interaction.reply(getRandomArrayItem(CHUSHPAN_QUOTES))
+      }
     })
 
     client.login(env.DISCORD_APP_TOKEN!)
-  } catch (error) {
-    console.error(error)
+
+    logger.info(`🚀 Discord Bot started`)
+  } catch (err) {
+    logger.error(err)
   }
 }
-
-start()

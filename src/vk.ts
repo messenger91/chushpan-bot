@@ -10,7 +10,7 @@ import UserConversationRepository from './repository/UserConversationRepository'
 import UserConversationEventRepository from './repository/UserConversationEventRepository'
 import logger from './utils/logger'
 import env from './config/env'
-import { BOT_COMMANDS, VK_COMMAND_PREFIX } from './config/constants'
+import { BOT_COMMANDS, CHUSHPAN_QUOTES, VK_COMMAND_PREFIX } from './config/constants'
 
 const vk = new VK({
   token: env.VK_API_TOKEN!,
@@ -23,7 +23,7 @@ const state = {
 
 const commands = Object.values(BOT_COMMANDS).map((c) => c.name)
 
-async function start() {
+export async function start() {
   vk.updates.on('message_new', async (context) => {
     logger.debug('state', state)
     if (!context.text) {
@@ -114,6 +114,10 @@ async function start() {
         await context.send('Версия бота - 1.0.0')
       }
 
+      if (command === BOT_COMMANDS.quote.name) {
+        await context.send(getRandomArrayItem(CHUSHPAN_QUOTES))
+      }
+
       if (command === BOT_COMMANDS.stats.name) {
         const rows = await UserConversationEventRepository.stat(conversation.id, 'chushpan')
 
@@ -146,8 +150,6 @@ async function start() {
   await vk.updates.start()
   scheduler()
 }
-
-start()
 
 async function syncUser(params: UsersUserFull) {
   const socialId = params.id.toString()

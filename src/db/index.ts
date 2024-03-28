@@ -40,6 +40,6 @@ export function buildQueryByRawSql<T>(sql: string): CompiledQuery<T> {
   }
 }
 
-testConnection()
+// testConnection()
 
 export default db
