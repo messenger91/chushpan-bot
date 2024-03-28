@@ -2,6 +2,7 @@ import { BotCommand } from '../@types'
 import { SocialPlatformEnum } from '../db/types'
 
 export const VK_COMMAND_PREFIX = '[club188527136|@chushpan_bot] '
+export const TG_COMMAND_PREFIX = '@dnb64_bot '
 
 export const BOT_COMMANDS: { [key: string]: BotCommand } = {
   chushpan: {

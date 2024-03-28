@@ -21,6 +21,8 @@ const state = {
   users: new Map<number, User>(),
 }
 
+const commands = Object.values(BOT_COMMANDS).map((c) => c.name)
+
 async function start() {
   vk.updates.on('message_new', async (context) => {
     logger.debug('state', state)
@@ -41,7 +43,7 @@ async function start() {
     }
 
     if (!conversation) {
-      conversation = await syncConversation(context.peerId, 'vk')
+      conversation = await syncConversation(context.peerId, 'VK')
       state.conversations.set(context.peerId, conversation)
     }
 
@@ -50,7 +52,7 @@ async function start() {
     if (context.text && isCommand) {
       const command = context.text.slice(VK_COMMAND_PREFIX.length)
 
-      const commands = Object.values(BOT_COMMANDS).map((c) => c.name)
+
 
       if (!commands.includes(command)) {
         await context.send(
