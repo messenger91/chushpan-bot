@@ -2,18 +2,10 @@ import { REST, Routes, Client, GatewayIntentBits } from 'discord.js'
 import env from './config/env'
 import logger from './utils/logger'
 import { getRandomArrayItem } from './helpers'
-import { CHUSHPAN_QUOTES } from './config/constants'
+import { BOT_COMMANDS, CHUSHPAN_QUOTES } from './config/constants'
+import { discordCommands } from './mappers/discord'
 
-const commands = [
-  {
-    name: 'ping',
-    description: 'Проверка бота',
-  },
-  {
-    name: 'quote',
-    description: 'Цитата дня',
-  },
-]
+const commands = discordCommands(BOT_COMMANDS)
 
 const rest = new REST({ version: '10' }).setToken(env.DISCORD_APP_TOKEN!)
 

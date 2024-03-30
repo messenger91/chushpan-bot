@@ -7,10 +7,10 @@ export async function up(db: Kysely<any>): Promise<void> {
     .createTable(TABLE)
     .addColumn('id', 'serial', (col) => col.primaryKey())
     .addColumn('social_id', 'varchar', (col) => col.notNull())
-    .addColumn('social_platform', 'varchar', (col) => col.notNull())
+    .addColumn('social_platform', sql`social_platform_enum`, (col) => col.notNull())
     .addColumn('createdAt', 'timestamp', (col) => col.defaultTo(sql`CURRENT_TIMESTAMP`).notNull())
     .addColumn('updatedAt', 'timestamp', (col) => col.defaultTo(sql`CURRENT_TIMESTAMP`).notNull())
-    .addUniqueConstraint('conversations_social_id_social_platform_unique', ['social_id', 'social_platform'])
+    .addUniqueConstraint(`${TABLE}_social_id_social_platform_unique`, ['social_id', 'social_platform'])
     .execute()
 }
 

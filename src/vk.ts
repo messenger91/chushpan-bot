@@ -10,7 +10,7 @@ import UserConversationRepository from './repository/UserConversationRepository'
 import UserConversationEventRepository from './repository/UserConversationEventRepository'
 import logger from './utils/logger'
 import env from './config/env'
-import { BOT_COMMANDS, CHUSHPAN_QUOTES, VK_COMMAND_PREFIX } from './config/constants'
+import { BOT_COMMANDS, CHUSHPAN_QUOTES, BOT_MENTION_PREFIX } from './config/constants'
 
 const vk = new VK({
   token: env.VK_API_TOKEN!,
@@ -47,12 +47,10 @@ export async function start() {
       state.conversations.set(context.peerId, conversation)
     }
 
-    const isCommand = context.text.startsWith(VK_COMMAND_PREFIX)
+    const isCommand = context.text.startsWith(BOT_MENTION_PREFIX.VK)
 
     if (context.text && isCommand) {
-      const command = context.text.slice(VK_COMMAND_PREFIX.length)
-
-
+      const command = context.text.slice(BOT_MENTION_PREFIX.VK.length)
 
       if (!commands.includes(command)) {
         await context.send(

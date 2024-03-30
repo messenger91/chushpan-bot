@@ -9,6 +9,7 @@ export async function up(db: Kysely<any>): Promise<void> {
     .addColumn('user_id', 'integer', (col) => col.notNull())
     .addColumn('conversation_id', 'integer', (col) => col.notNull())
     .addColumn('event', 'varchar', (col) => col.notNull())
+    .addColumn('value', 'varchar', (col) => col.notNull().defaultTo('0'))
     .addColumn('createdAt', 'timestamp', (col) => col.defaultTo(sql`CURRENT_TIMESTAMP`).notNull())
     .addColumn('updatedAt', 'timestamp', (col) => col.defaultTo(sql`CURRENT_TIMESTAMP`).notNull())
     .addForeignKeyConstraint(`${TABLE}_user_id_foreign`, ['user_id'], 'users', ['id'])

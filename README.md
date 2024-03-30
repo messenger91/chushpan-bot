@@ -1,5 +1,12 @@
 # chushpan-bot
 
+Мультиплатформенный бот на Node.js
+
+## Стек: 
+- Node.js (vk-io, telegraf.js, discord.js)
+- Postgres (kusely.js)
+- Event-Driven Architecture
+
 ## Интеграции: 
 
 VK: https://vk.com/chushpan_bot
@@ -8,7 +15,7 @@ Telegram: https://t.me/chushpan1_bot
 
 Discord: https://discord.com/oauth2/authorize?client_id=1222974450513739960
 
-## Текущий функционал:
+## Базовый функционал:
 - чушпан: Поиск чушпана дня (random)
 - участвовать: Регистрация чушпана
 - топ: Вывод топа чушпанов беседы
@@ -17,7 +24,6 @@ Discord: https://discord.com/oauth2/authorize?client_id=1222974450513739960
 ## Backlog проекта:
 - викторина
 - автозапуск
-- переработка команд для расширения функционала
 - Разработка архитектуры
 
 ## Roadmap 2024:

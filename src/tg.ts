@@ -9,7 +9,7 @@ import { Update } from 'telegraf/typings/core/types/typegram'
 import ConversationRepository from './repository/ConversationRepository'
 import UserConversationRepository from './repository/UserConversationRepository'
 import UserConversationEventRepository from './repository/UserConversationEventRepository'
-import { BOT_COMMANDS, CHUSHPAN_QUOTES, TG_COMMAND_PREFIX } from './config/constants'
+import { BOT_COMMANDS, BOT_MENTION_PREFIX, CHUSHPAN_QUOTES } from './config/constants'
 
 const bot = new Telegraf(env.TELEGRAM_BOT_TOKEN!)
 
@@ -49,18 +49,18 @@ export function start() {
       state.conversations.set(ctx.update.message.chat.id, conversation)
     }
 
-    const isCommand = ctx.update.message.text.startsWith(TG_COMMAND_PREFIX)
+    const isCommand = ctx.update.message.text.startsWith(BOT_MENTION_PREFIX.TG)
 
     if (ctx.update.message.text && isCommand) {
-      const command = ctx.update.message.text.slice(TG_COMMAND_PREFIX.length)
+      const command = ctx.update.message.text.slice(BOT_MENTION_PREFIX.TG.length)
 
       if (!commands.includes(command)) {
         await ctx.reply(
-          `Передана неизвестная команда, чтобы уточнить список доступных команд запроси команду @dnb64_bot команды`
+          `Передана неизвестная команда, чтобы уточнить список доступных команд запроси команду @chushpan1_bot команды`
         )
       }
 
-      if (command === BOT_COMMANDS.chushpan.name) {
+      if (command.trim() === BOT_COMMANDS.chushpan.name) {
         let conversation = state.conversations.get(ctx.update.message.chat.id)
 
         if (!conversation) {

@@ -1,45 +1,63 @@
 import { BotCommand } from '../@types'
 import { SocialPlatformEnum } from '../db/types'
 
-export const VK_COMMAND_PREFIX = '[club188527136|@chushpan_bot] '
-export const TG_COMMAND_PREFIX = '@chushpan1_bot '
+/**
+ * Префикс при упоминании бота
+ */
+export const BOT_MENTION_PREFIX: Record<SocialPlatformEnum, string> = {
+  VK: '[club188527136|@chushpan_bot] ',
+  TG: '@chushpan1_bot ',
+  DS: '',
+}
 
-export const BOT_COMMANDS: { [key: string]: BotCommand } = {
+export const BOT_COMMANDS: { [command: string]: BotCommand } = {
   chushpan: {
-    platforms: ['VK', 'TG', 'DS'] as SocialPlatformEnum[],
+    id: 1,
+    key: 'chushpan',
     name: 'чушпан',
+    description: 'Поиск чушпана',
     visible: true,
-    sort: 0,
+    platforms: ['VK', 'TG', 'DS'] as SocialPlatformEnum[],
   },
   register: {
-    platforms: ['VK', 'TG', 'DS'] as SocialPlatformEnum[],
+    id: 2,
+    key: 'reg',
     name: 'участвовать',
+    description: 'Регистрация в поиске чушпана',
     visible: true,
-    sort: 1,
+    platforms: ['VK', 'TG', 'DS'] as SocialPlatformEnum[],
   },
   commandList: {
-    platforms: ['VK', 'TG', 'DS'] as SocialPlatformEnum[],
+    id: 3,
+    key: 'help',
     name: 'команды',
+    description: 'Список доступных команд',
     visible: false,
-    sort: 2,
+    platforms: ['VK', 'TG', 'DS'] as SocialPlatformEnum[],
   },
   version: {
-    platforms: ['VK', 'TG', 'DS'] as SocialPlatformEnum[],
-    name: 'version',
+    id: 4,
+    key: 'version',
+    name: 'версия',
+    description: 'Версия бота',
     visible: false,
-    sort: 3,
+    platforms: ['VK', 'TG', 'DS'] as SocialPlatformEnum[],
   },
   stats: {
-    platforms: ['VK', 'TG', 'DS'] as SocialPlatformEnum[],
+    id: 4,
+    key: 'stats',
     name: 'топ',
+    description: 'топ',
     visible: true,
-    sort: 4,
+    platforms: ['VK', 'TG', 'DS'] as SocialPlatformEnum[],
   },
   quote: {
-    platforms: ['VK', 'TG', 'DS'] as SocialPlatformEnum[],
+    id: 5,
+    key: 'quote',
     name: 'цитата',
+    description: 'Случайная цитата',
     visible: true,
-    sort: 5,
+    platforms: ['VK', 'TG', 'DS'] as SocialPlatformEnum[],
   },
 }
 
@@ -56,5 +74,5 @@ export const CHUSHPAN_QUOTES = [
   'Что за человек! Ни говна, ни ложки.',
   'Пацаны не извиняются.',
   'я на вас ща смотрю, вы не готовы',
-  'если пенис не большой, значит отъеби с душой'
+  'если пенис не большой, значит отъеби с душой',
 ]
