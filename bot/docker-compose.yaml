@@ -1,0 +1,13 @@
+version: "3.8"
+services:
+  postgres:
+    image: postgres:latest
+    restart: always
+    container_name: postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: example
+    ports:
+      - "5432:5432"
+    volumes:
+      - "/var/lib/docker/postgres_data:/var/lib/postgresql/data"
