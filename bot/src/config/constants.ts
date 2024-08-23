@@ -11,24 +11,8 @@ export const BOT_MENTION_PREFIX: Record<SocialPlatformEnum, string> = {
 }
 
 export const BOT_COMMANDS: { [command: string]: BotCommand } = {
-  chushpan: {
-    id: 1,
-    key: 'chushpan',
-    name: 'чушпан',
-    description: 'Поиск чушпана',
-    visible: true,
-    platforms: ['VK', 'TG', 'DS'] as SocialPlatformEnum[],
-  },
-  register: {
-    id: 2,
-    key: 'reg',
-    name: 'участвовать',
-    description: 'Регистрация в поиске чушпана',
-    visible: true,
-    platforms: ['VK', 'TG', 'DS'] as SocialPlatformEnum[],
-  },
   commandList: {
-    id: 3,
+    id: 1,
     key: 'help',
     name: 'команды',
     description: 'Список доступных команд',
@@ -36,26 +20,26 @@ export const BOT_COMMANDS: { [command: string]: BotCommand } = {
     platforms: ['VK', 'TG', 'DS'] as SocialPlatformEnum[],
   },
   version: {
-    id: 4,
+    id: 2,
     key: 'version',
     name: 'версия',
     description: 'Версия бота',
     visible: false,
     platforms: ['VK', 'TG', 'DS'] as SocialPlatformEnum[],
   },
-  stats: {
-    id: 4,
-    key: 'stats',
-    name: 'топ',
-    description: 'топ',
-    visible: true,
-    platforms: ['VK', 'TG', 'DS'] as SocialPlatformEnum[],
-  },
   quote: {
-    id: 5,
+    id: 3,
     key: 'quote',
     name: 'цитата',
     description: 'Случайная цитата',
+    visible: true,
+    platforms: ['VK', 'TG', 'DS'] as SocialPlatformEnum[],
+  },
+  ping: {
+    id: 4,
+    key: 'ping',
+    name: 'пинг',
+    description: 'Проверка бота',
     visible: true,
     platforms: ['VK', 'TG', 'DS'] as SocialPlatformEnum[],
   },
