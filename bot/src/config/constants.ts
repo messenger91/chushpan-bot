@@ -19,6 +19,14 @@ export const BOT_COMMANDS: { [command: string]: BotCommand } = {
     visible: false,
     platforms: ['VK', 'TG', 'DS'] as SocialPlatformEnum[],
   },
+  ping: {
+    id: 2,
+    key: 'ping',
+    name: 'Ping',
+    description: 'Проверка бота',
+    visible: false,
+    platforms: ['VK', 'TG', 'DS'] as SocialPlatformEnum[],
+  },
   version: {
     id: 2,
     key: 'version',
@@ -35,13 +43,21 @@ export const BOT_COMMANDS: { [command: string]: BotCommand } = {
     visible: true,
     platforms: ['VK', 'TG', 'DS'] as SocialPlatformEnum[],
   },
-  ping: {
+  advices: {
     id: 4,
-    key: 'ping',
-    name: 'пинг',
-    description: 'Проверка бота',
+    key: 'advices',
+    name: 'советы',
+    description: 'Советы по игре',
     visible: true,
-    platforms: ['VK', 'TG', 'DS'] as SocialPlatformEnum[],
+    platforms: ['DS'] as SocialPlatformEnum[],
+  },
+  gif: {
+    id: 5,
+    key: 'gif',
+    name: 'Gif',
+    description: 'Получить gif изображение',
+    visible: true,
+    platforms: ['DS'] as SocialPlatformEnum[],
   },
 }
 
@@ -59,4 +75,13 @@ export const CHUSHPAN_QUOTES = [
   'Пацаны не извиняются.',
   'я на вас ща смотрю, вы не готовы',
   'если пенис не большой, значит отъеби с душой',
+]
+
+
+export const GIFS = [
+  'https://gifdb.com/images/high/minecraft-reporting-villager-orgemlp0iky9yk9u.gif'
+]
+
+export const ADVICES = [
+'Гораздо экономней не красить шерсть, а красить сразу саму овцу.'
 ]
